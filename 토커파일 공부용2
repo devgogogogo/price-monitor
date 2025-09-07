@@ -1,0 +1,24 @@
+FROM eclipse-temurin:17-jdk AS build
+WORKDIR /workspace/app
+#COPY <호스트(내 PC) 경로> <컨테이너 안 경로>
+COPY gradlew .
+COPY gradle gradle
+COPY build.gradle .
+#앞의 build.gradle → 내 PC의 파일
+#뒤의 . → 컨테이너 안의 현재 디렉토리(= WORKDIR)
+COPY settings.gradle .
+COPY src src
+#앞의 src → 내 PC에 있는 src 폴더
+#뒤의 src → 컨테이너 안에서 현재 작업 디렉토리(WORKDIR) 밑에 생길 이름
+
+#현재 경로를 gradle wrapper를 실행해줘->  빌드 과정에서 필요한 실행되어야하는 명령어는 run을 사용하면된다.
+RUN ./gradlew clean build
+# /workspace/app/build/libs/price-monitor-0.0.1-SNAPSHOT.jar app.jar 여기 경로에 빌드가 된다.
+FROM eclipse-temurin:17-jdk
+
+COPY --from=build /workspace/app/build/libs/price-monitor-0.0.1-SNAPSHOT.jar app.jar
+COPY script/entrypoint.sh entrypoint.sh
+RUN chmod +x entrypoint.sh
+
+ENTRYPOINT ["/entrypoint.sh"]
+
