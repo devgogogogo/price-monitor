@@ -1,6 +1,7 @@
-package com.fastcampus.pricemonitor.model.controller;
+package com.fastcampus.pricemonitor.controller;
 
 import com.fastcampus.pricemonitor.model.coinbase.SpotPriceResponse;
+import com.fastcampus.pricemonitor.model.price.PriceResponse;
 import com.fastcampus.pricemonitor.service.CoinbaseService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -14,9 +15,10 @@ public class PriceController {
     private final CoinbaseService coinbaseService;
 
     @GetMapping("/{currencyPair}/market-price")
-    public ResponseEntity<SpotPriceResponse> getMarketPrice(@PathVariable String currencyPair) {
+    public ResponseEntity<PriceResponse> getMarketPrice(@PathVariable String currencyPair) {
         SpotPriceResponse spotPriceResponse = coinbaseService.getSpotPriceByCurrencyPair(currencyPair);
-        return ResponseEntity.ok(spotPriceResponse);
+        PriceResponse priceResponse = PriceResponse.from(spotPriceResponse);
+        return ResponseEntity.ok(priceResponse);
     }
 
 }

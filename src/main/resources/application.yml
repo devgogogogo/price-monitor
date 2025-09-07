@@ -1,1 +1,3 @@
-spring.application.name=price-monitor
+spring.application.name: price-monitor
+
+server.port: 8888
